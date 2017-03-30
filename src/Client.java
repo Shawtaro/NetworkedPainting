@@ -3,10 +3,14 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.Point;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Vector;
 
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JColorChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -108,6 +112,9 @@ public class Client extends JFrame {
 			// draw all of the paint objects
 			for (PaintObject ob : allPaintObjects)
 				ob.draw(g);
+			Image icon;
+				icon = new ImageIcon("nyan.gif").getImage();
+				g.drawImage(icon, 0, 0, 200, 200, null);
 			repaint();
 		}
 	}
