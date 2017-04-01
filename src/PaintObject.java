@@ -1,8 +1,9 @@
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.io.Serializable;
 
-public class PaintObject {
+public class PaintObject implements Serializable{
 
 	private Point pointOne;
 	private Point pointTwo;

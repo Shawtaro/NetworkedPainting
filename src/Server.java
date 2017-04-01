@@ -13,29 +13,36 @@ import java.util.Vector;
  */
 
 public class Server {
-	public static void main(String[] args) {
-		try {
-			ServerSocket server = new ServerSocket(4000);
-			Vector<PaintObject> allPaintObjects = new Vector<>();
-			ArrayList<ThreadedEchoHandler> connections = new ArrayList<ThreadedEchoHandler>();
-			while (true) {
-				Socket connection = server.accept();
-				// Runnable r = new ThreadedEchoHandler(connection);
-				connections.add(new ThreadedEchoHandler(connection));
+	private static ArrayList<ObjectOutputStream> clientOutputStreams;
+	private static ArrayList<ObjectInputStream> fromClientStreams;
 
-				for (ThreadedEchoHandler t : connections) {
-					Vector<PaintObject> clientPaintObjects = t.getMyClient().getAllPaintObjects();
-					if (allPaintObjects.size() != clientPaintObjects.size()) {
-						allPaintObjects = clientPaintObjects;
-						for (ThreadedEchoHandler t2 : connections) {
-							t2.getMyClient().setAllPaintObjects(allPaintObjects);
-						}
-					}
-				}
-			}
+	private static Vector<PaintObject> allPaintObjectsMaster;
+
+	/**
+	 * @param args
+	 */
+	/**
+	 * @param args
+	 */
+	@SuppressWarnings("unchecked")
+	public static void main(String[] args) {
+
+		ServerSocket server;
+		try {
+			server = new ServerSocket(4000);
+			Vector<PaintObject> allPaintObjectsMaster = new Vector<>();
+			clientOutputStreams = new ArrayList<ObjectOutputStream>();
+			fromClientStreams = new ArrayList<ObjectInputStream>();
+			Thread t2 = new ThreadedListenConnections(clientOutputStreams, server, fromClientStreams);
+			t2.start();
+
+
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		} 
+
+		// fromClientStreams.
+
 	}
 }

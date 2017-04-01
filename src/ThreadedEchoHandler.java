@@ -2,17 +2,21 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Vector;
+
+import javax.swing.JOptionPane;
 
 class ThreadedEchoHandler implements Runnable {
 
 	private Socket connection;
+	private static ArrayList<ObjectOutputStream> clientOutputStreams;
 	private Client myClient;
-	private ObjectOutputStream out;
-	private ObjectInputStream in;
+	// private ObjectInputStream reader;
+	private static ObjectInputStream toServerStreams;
 
-	public ThreadedEchoHandler(Socket connection) {
-		this.connection = connection;
+	public ThreadedEchoHandler(Vector<PaintObject> allPaintObjects) {
+
 	}
 
 	public Client getMyClient() {
@@ -23,38 +27,19 @@ class ThreadedEchoHandler implements Runnable {
 		this.myClient = myClient;
 	}
 
-	public Socket getConnection() {
-		return connection;
-	}
-
 	@Override
 	public void run() {
+		String message;
 		try {
-			out = new ObjectOutputStream(connection.getOutputStream());
-			in = new ObjectInputStream(connection.getInputStream());
-			myClient = new Client();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 
-	}
+			while (true) {
+				// Wait for the client send a writeObject message to the server
+				message = (String) reader.readObject();
+				// Send the same message from the server to all clients
+				// tellEveryone(message);
+			}
+		} catch (Exception ex) {
 
-	public void write(Object obj) {
-		try {
-			myClient.setAllPaintObjects((Vector<PaintObject>) in.readObject());
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	public void read() {
-		try {
-			out.writeObject(myClient.getAllPaintObjects());
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 	}
 }

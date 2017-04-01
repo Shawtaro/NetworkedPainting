@@ -5,8 +5,15 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Point;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.MalformedURLException;
+import java.net.Socket;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Vector;
 
 import javax.swing.BoxLayout;
@@ -30,6 +37,11 @@ import javafx.scene.control.RadioButton;
 
 public class Client extends JFrame {
 
+	//ThreadedEchoHandler readingThread;
+	private static ObjectOutputStream outputToServer;
+	private static ObjectInputStream inputToServer;
+	private static boolean readMe=true;
+	
 	public static void main(String[] args) {
 		PaintObject a = new Line(Color.RED, new Point(10, 100), new Point(500, 100));
 		PaintObject e = new Rectangle(Color.PINK, new Point(200, 200), new Point(350, 500));
@@ -39,10 +51,27 @@ public class Client extends JFrame {
 		allPaintObjects.add(e);
 		allPaintObjects.add(j);
 		
-		Client client = new Client();
+		
+		try {
 
+			Socket server = new Socket("localhost", 4000);
 
-		client.setVisible(true);
+			outputToServer = new ObjectOutputStream(server.getOutputStream());
+			inputToServer = new ObjectInputStream(server.getInputStream());
+			
+			Client myGUI=new Client();
+			
+			while(readMe){
+					//outputToServer.notify();
+					//Thread.sleep(500);
+					Vector<PaintObject> fromServer = (Vector<PaintObject>) inputToServer.readObject();
+					allPaintObjects=fromServer;
+					readMe=true;
+					//drawingPanel.repaint();
+			}
+		} catch (Exception ex){
+			
+		}
 	}
 
 	public static Vector<PaintObject> getAllPaintObjects() {
@@ -53,22 +82,32 @@ public class Client extends JFrame {
 		Client.allPaintObjects = allPaintObjects;
 	}
 
-	private DrawingPanel drawingPanel;
+	private static DrawingPanel drawingPanel;
 	private static Vector<PaintObject> allPaintObjects;
 	private JColorChooser tcc;
+	private boolean paintObjectsChanged=false;
+	private boolean isPainting=false;
+	private Point pointOne,pointTwo;
 	
+	public boolean isPaintObjectsChanged() {
+		return paintObjectsChanged;
+	}
+
 	public Client() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		//setResizable(false);
-
+		//this.readingThread = new ThreadedEchoHandler(allPaintObjects);		
 		setLocation(20, 20);
 		setSize(800, 600);
 		getContentPane().setLayout(
 			    new BoxLayout(getContentPane(), BoxLayout.Y_AXIS)
 			);
 		
+		mouseListener paintBrush = new mouseListener(); 
+		
 		drawingPanel = new DrawingPanel();
 		drawingPanel.setSize(getWidth()/2, getHeight()/2);
+		drawingPanel.addMouseListener(paintBrush);
 		JScrollPane scrollPane=new JScrollPane(drawingPanel, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollPane.setBounds(50, 30, 300, 50);
@@ -117,5 +156,86 @@ public class Client extends JFrame {
 				g.drawImage(icon, 0, 0, 200, 200, null);
 			repaint();
 		}
+	}
+	
+	private class mouseListener implements MouseListener{
+/*
+		  public void tellEveryone() {
+		    for (ObjectOutputStream output : clientOutputStreams) {
+		      try {
+		        output.writeObject(allPaintObjects);
+		        output.flush();
+		      } catch (Exception ex) {
+		        clientOutputStreams.remove(output);
+		      }
+		    }
+		  }*/
+		void badFix(){
+			allPaintObjects.add(new Line(Color.PINK,pointOne,pointTwo));
+			drawingPanel.repaint();
+			paintObjectsChanged=true;
+			try {
+				//outputToServer.reset();
+				outputToServer.writeObject(allPaintObjects);
+				//outputToServer.flush();
+				//outputToServer.notify();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		@Override
+		public void mouseClicked(MouseEvent arg0) {
+			if(!isPainting){
+				pointOne=arg0.getPoint();
+				isPainting=true;
+			}
+			else{
+				readMe=false;
+				pointTwo=arg0.getPoint();
+				isPainting=false;
+				allPaintObjects.add(new Line(Color.PINK,pointOne,pointTwo));
+				drawingPanel.repaint();
+				paintObjectsChanged=true;
+				try {
+					//outputToServer.reset();
+					outputToServer.writeObject(allPaintObjects);
+					//outputToServer.flush();
+					//outputToServer.notify();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				badFix();
+				//tellEveryone();
+			}
+			System.out.println("GOOD NEWS");
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mouseExited(MouseEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mousePressed(MouseEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+		
 	}
 }
