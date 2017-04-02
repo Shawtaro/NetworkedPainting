@@ -2,6 +2,14 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
 
+/*
+ * Rectangle.java
+ * 
+ * @author Shawtaroh Granzier-Nakajima, Eric M Evans
+ * 
+ * Implements rectangle object
+ */
+
 public class Rectangle extends PaintObject {
 
 	public Rectangle(Color color, Point point, Point point2) {

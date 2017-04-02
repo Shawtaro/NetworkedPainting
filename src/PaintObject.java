@@ -3,6 +3,14 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.io.Serializable;
 
+/*
+ * PaintObject.java
+ * 
+ * @author Shawtaroh Granzier-Nakajima, Eric M Evans
+ * 
+ * Abstract class for paint objects
+ */
+
 public class PaintObject implements Serializable{
 
 	private Point pointOne;

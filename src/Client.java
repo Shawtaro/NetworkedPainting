@@ -9,6 +9,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -90,10 +92,18 @@ public class Client extends JFrame {
 		 */
 		while (true) {
 			System.out.println("waiting...");
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			this.allPaintObjects = (Vector<PaintObject>) inputFromServer
 			        .readObject();
 			System.out.println("just updated");
 			drawingPanel.repaint();
+			resize(this.getWidth()+1,this.getHeight()+1);
+			resize(this.getWidth()-1,this.getHeight()-1);
 		}
 		
 	}
@@ -114,13 +124,14 @@ public class Client extends JFrame {
 		MyMouseListener paintBrush = new MyMouseListener();
 		
 		drawingPanel = new DrawingPanel();
-		drawingPanel.setSize(getWidth() / 2, getHeight() / 2);
+		drawingPanel.setPreferredSize(new Dimension(getWidth() , getHeight() ));
 		drawingPanel.addMouseListener(paintBrush);
 		drawingPanel.addMouseMotionListener(paintBrush);
 		JScrollPane scrollPane = new JScrollPane(drawingPanel,
 		        ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
 		        ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		scrollPane.setBounds(50, 30, 300, 50);
+		//scrollPane.setBounds(50, 30, 300, 50);
+		
 		scrollPane.setPreferredSize(new Dimension(300, 300));
 		this.getContentPane().add(scrollPane);
 		
@@ -144,7 +155,7 @@ public class Client extends JFrame {
 		imageButton = new JRadioButton("Image");
 		radioButtons.add(imageButton);
 		groupRadio.add(imageButton);
-		ovalButton.addActionListener(new RadioListener(imageButton));
+		imageButton.addActionListener(new RadioListener(imageButton));
 		
 		this.getContentPane().add(radioButtons);
 		
@@ -256,14 +267,12 @@ public class Client extends JFrame {
 				
 			if (tempPaintObject != null)
 				tempPaintObject.draw(g);
-			
-			Image icon;
-			icon = new ImageIcon("nyan.gif").getImage();
-			g.drawImage(icon, 0, 0, 200, 200, null);
+						
 			repaint();
+			resize(801,601);
+			resize(800,600);
 		}
 	}
-	
 	
 	
 	/*
@@ -312,7 +321,9 @@ public class Client extends JFrame {
 			
 			tempPaintObject = figurePaintObject(pointOne, pt);
 			
-			repaint();
+			//repaint();
+			resize(801,601);
+			resize(800,600);
 		}
 		
 		

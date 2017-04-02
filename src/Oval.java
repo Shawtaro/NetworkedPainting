@@ -2,6 +2,14 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
 
+/*
+ * Oval.java
+ * 
+ * @author Shawtaroh Granzier-Nakajima, Eric M Evans
+ * 
+ * Implements Oval object
+ */
+
 public class Oval extends PaintObject {
 
 	public Oval(Color color, Point point, Point point2) {

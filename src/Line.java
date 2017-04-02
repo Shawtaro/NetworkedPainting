@@ -2,6 +2,14 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
 
+/*
+ * Line.java
+ * 
+ * @author Shawtaroh Granzier-Nakajima, Eric M Evans
+ * 
+ * Implements Line object
+ */
+
 public class Line extends PaintObject {
 
 	public Line(Color color, Point point, Point point2) {
