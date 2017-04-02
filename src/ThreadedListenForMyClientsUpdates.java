@@ -1,8 +1,10 @@
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Vector;
+
 /*
  * @author Eric M. Evans, Shawtaroh Granzier-Nakajima
  * 
@@ -86,10 +88,16 @@ public class ThreadedListenForMyClientsUpdates extends Thread {
 	private void tellEveryone() throws IOException, InterruptedException {
 		
 		for (ObjectOutputStream output : toAllClientStreams) {
-			output.reset();
-			output.writeObject(this.server.getAllPaintObjectsMaster());
-			System.out.println("UPDATINGLINES");
-			output.flush();
+			try {
+				output.reset();
+				output.writeObject(this.server.getAllPaintObjectsMaster());
+				System.out.println("UPDATINGLINES");
+				output.flush();
+			}
+			catch (SocketException e) {
+				// do nothing -- happens when unused stream found in list from
+				// exited client
+			}
 			// Thread.sleep(50);
 		}
 		
